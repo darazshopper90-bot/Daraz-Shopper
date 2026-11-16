@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daraz Shopper</title>
+<style>
+:root{color-scheme:light;--bg:#faf7f5;--card:#fff;--tx:#1f1b18;--mu:#6d6560;--bd:#e8e1db;--or:#f85606;--or2:#fff0e8;--gr:#0a8f4e}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#16130f;--card:#211d19;--tx:#f3ede8;--mu:#a69d95;--bd:#38322c;--or2:#3a2216}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI","Noto Sans Sinhala","Iskoola Pota",sans-serif}
+header{background:var(--or);color:#fff;padding:14px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+header h1{margin:0;font-size:22px;flex:1;min-width:140px}
+header button{background:#fff;color:var(--or);border:0;border-radius:20px;padding:6px 14px;font-weight:600;cursor:pointer}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+input,select,textarea{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;width:100%}
+.bar input{flex:1;min-width:160px;width:auto}.bar select{width:auto}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:8px}
+.chip{white-space:nowrap;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:20px;padding:5px 13px;cursor:pointer}
+.chip.on{background:var(--or);border-color:var(--or);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s, box-shadow .15s}
+.card:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.im{position:relative;aspect-ratio:1;background:var(--or2)}
+.im img{width:100%;height:100%;object-fit:cover;display:block}
+.tags{position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.tag{font-size:11px;font-weight:700;color:#fff;border-radius:4px;padding:2px 7px;background:var(--or)}
+.tag.f{background:var(--gr)}.tag.n{background:#2563eb}
+.th{display:flex;gap:4px;padding:6px 8px 0}
+.th img{width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid var(--bd);cursor:pointer}
+.bd{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.bd h3{margin:0;font-size:15px}
+.bd p{margin:0;color:var(--mu);font-size:13px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pr{font-size:18px;font-weight:700;color:var(--or)}.old{color:var(--mu);text-decoration:line-through;font-size:13px;margin-left:6px;font-weight:400}.off{color:var(--gr);font-size:13px;margin-left:6px}
+.go{margin-top:auto;display:block;text-align:center;background:var(--or);color:#fff;text-decoration:none;border-radius:8px;padding:8px;font-weight:600}
+.sm{display:flex;gap:6px;margin-top:6px}.sm button{flex:1;padding:5px;border-radius:6px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}
+.empty{text-align:center;color:var(--mu);padding:50px 10px}
+footer{max-width:1100px;margin:0 auto;padding:10px 16px 30px;color:var(--mu);font-size:12px}
+#adm .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:16px;z-index:20}
+#adm form{background:var(--card);border-radius:14px;padding:16px;width:100%;max-width:520px;display:grid;gap:8px}
+#adm label{font-size:13px;color:var(--mu);display:grid;gap:3px}
+#adm .row{display:flex;gap:12px;flex-wrap:wrap}#adm .row label{display:flex;align-items:center;gap:5px;color:var(--tx)}#adm .row input{width:auto}
+#adm .ac{display:flex;gap:8px;justify-content:flex-end}#adm .ac button{padding:8px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}#adm .ac .pri{background:var(--or);color:#fff;border-color:var(--or)}
+#msg{color:var(--or);font-size:13px}
+</style>
+</head>
+<body>
+<header><h1>🛍️ Daraz Shopper</h1><button id="lg">සිං / EN</button><button id="ab" hidden></button></header>
+<main>
+<div class="bar"><input id="q" type="search"><select id="so"></select></div>
+<div class="chips" id="ch"></div>
+<div class="chips" id="fl"></div>
+<div id="app"></div>
+</main>
+<footer id="ft"></footer>
+<div id="adm"></div>
+<script id="data" type="application/json">{"products":[]}</script>
+<script>
+const CATS=[["beauty","Beauty","රූපලාවණ්‍ය"],["fashion","Fashion","විලාසිතා"],["groceries","Groceries","සිල්ලර බඩු"],["women","Women's Clothing","කාන්තා ඇඳුම්"],["men","Men's Clothing","පිරිමි ඇඳුම්"],["accessories","Accessories","උපාංග"],["bags","Bags & Travel","බෑග් සහ ගමන්"],["other","Other","වෙනත්"]];
+const L={en:{all:"All",top:"Top Sale",free:"Free Delivery",nw:"New",buy:"View on Daraz",search:"Search products...",s1:"Newest",s2:"Price: low to high",s3:"Price: high to low",none:"No products yet.",adm:"Admin",add:"+ Add product",ed:"Edit",del:"Delete",ti:"Title",de:"Description",pr:"Price (Rs.)",op:"Old price (optional)",li:"Daraz affiliate link",ca:"Category",im:"Photos (up to 4)",sv:"Save",cn:"Cancel",conf:"Delete this product?",disc:"As a Daraz affiliate, we may earn a commission from purchases made through our links, at no extra cost to you. Prices may change on Daraz.",hint:"Tap “Add product” to add your first product."},
+si:{all:"සියල්ල",top:"වැඩිපුරම අලෙවි",free:"නොමිලේ බෙදාහැරීම",nw:"අලුත්",buy:"Daraz හි බලන්න",search:"නිෂ්පාදන සොයන්න...",s1:"අලුත්ම",s2:"මිල: අඩුවෙන් වැඩි",s3:"මිල: වැඩියෙන් අඩු",none:"තවම නිෂ්පාදන නැත.",adm:"පරිපාලක",add:"+ නිෂ්පාදනයක් එක් කරන්න",ed:"සංස්කරණය",del:"මකන්න",ti:"මාතෘකාව",de:"විස්තරය",pr:"මිල (රු.)",op:"පරණ මිල (අවශ්‍ය නම්)",li:"Daraz affiliate ලින්කුව",ca:"ප්‍රවර්ගය",im:"ඡායාරූප (4ක් දක්වා)",sv:"සුරකින්න",cn:"අවලංගු",conf:"මෙම නිෂ්පාදනය මකන්නද?",disc:"Daraz affiliate කෙනෙකු ලෙස, අපගේ ලින්ක් හරහා කරන මිලදී ගැනීම් සඳහා අපට කොමිස් මුදලක් ලැබිය හැක. එය ඔබට අමතර වියදමක් නොවේ. Daraz හි මිල වෙනස් විය හැක.",hint:"“නිෂ්පාදනයක් එක් කරන්න” ඔබා පළමු නිෂ්පාදනය එක් කරන්න."}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let P=JSON.parse($("#data").textContent).products||[];
+let lang="en";try{lang=localStorage.getItem("ds-lang")||"en"}catch(e){}
+let cat="all",flt="",admin=false,art=null,assets=null,busy=false;
+const t=k=>L[lang][k];
+const rs=n=>"Rs. "+Number(n).toLocaleString("en-US");
+const safe=u=>/^https?:\/\//i.test(u)?u:"#";
+function chrome(){
+ $("#q").placeholder=t("search");
+ $("#so").innerHTML=[["new","s1"],["lo","s2"],["hi","s3"]].map(a=>`<option value="${a[0]}">${t(a[1])}</option>`).join("");
+ $("#ch").innerHTML=[["all",t("all"),t("all")],...CATS].map(c=>`<button class="chip ${cat==c[0]?"on":""}" data-c="${c[0]}">${esc(lang=="si"?(c[2]||c[1]):c[1])}</button>`).join("");
+ $("#fl").innerHTML=[["top","⭐ "+t("top")],["free","🚚 "+t("free")],["nw","✨ "+t("nw")]].map(f=>`<button class="chip ${flt==f[0]?"on":""}" data-f="${f[0]}">${f[1]}</button>`).join("");
+ $("#ft").textContent="© Daraz Shopper · "+t("disc");
+ const ab=$("#ab");ab.hidden=!admin;ab.textContent=t("add");
+}
+function render(){
+ chrome();
+ const s=$("#q").value.toLowerCase().trim(),so=$("#so").value;
+ let l=P.filter(p=>(cat=="all"||p.cat==cat)&&(!flt||p[flt])&&(!s||(p.title+" "+p.desc).toLowerCase().includes(s)));
+ if(so=="lo")l.sort((a,b)=>a.price-b.price);else if(so=="hi")l.sort((a,b)=>b.price-a.price);else l.sort((a,b)=>b.ts-a.ts);
+ if(!l.length){$("#app").innerHTML=`<div class="empty">${t("none")}${admin&&!P.length?"<br>"+t("hint"):""}</div>`;return}
+ $("#app").innerHTML='<div class="grid">'+l.map(p=>{
+  const im=p.imgs||[],off=p.old>p.price?Math.round((1-p.price/p.old)*100):0;
+  return `<div class="card"><div class="im">${im[0]?`<img src="${esc(im[0])}" alt="${esc(p.title)}" id="m${p.id}">`:""}<div class="tags">${p.top?`<span class="tag">⭐ ${t("top")}</span>`:""}${p.free?`<span class="tag f">🚚 ${t("free")}</span>`:""}${p.nw?`<span class="tag n">${t("nw")}</span>`:""}</div></div>
+  ${im.length>1?`<div class="th">${im.map(u=>`<img src="${esc(u)}" alt="" data-m="m${p.id}">`).join("")}</div>`:""}
+  <div class="bd"><h3>${esc(p.title)}</h3><p>${esc(p.desc)}</p><div><span class="pr">${rs(p.price)}</span>${off?`<span class="old">${rs(p.old)}</span><span class="off">-${off}%</span>`:""}</div>
+  <a class="go" href="${esc(safe(p.link))}" target="_blank" rel="sponsored noopener">${t("buy")} →</a>
+  ${admin?`<div class="sm"><button data-e="${p.id}">${t("ed")}</button><button data-d="${p.id}">${t("del")}</button></div>`:""}</div></div>`}).join("")+"</div>";
+}
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-c],[data-f],[data-m],[data-e],[data-d]");if(!b)return;
+ const d=b.dataset;
+ if(d.c)cat=d.c;else if(d.f)flt=flt==d.f?"":d.f;
+ else if(d.m){$("#"+d.m).src=b.src;return}
+ else if(d.e){form(P.find(p=>p.id==d.e));return}
+ else if(d.d){if(confirm(t("conf"))){P=P.filter(p=>p.id!=d.d);persist()}return}
+ render();
+});
+$("#q").oninput=render;$("#so").onchange=render;
+$("#lg").onclick=()=>{lang=lang=="en"?"si":"en";try{localStorage.setItem("ds-lang",lang)}catch(e){}render()};
+$("#ab").onclick=()=>form(null);
+function form(p){
+ p=p||{};
+ $("#adm").innerHTML=`<div class="ov"><form id="f"><b>${t("adm")}</b>
+ <label>${t("ti")}<input name="title" required value="${esc(p.title)}"></label>
+ <label>${t("de")}<textarea name="desc" rows="3">${esc(p.desc)}</textarea></label>
+ <div class="row"><label style="flex:1">${t("pr")}<input name="price" type="number" min="0" step="any" required value="${esc(p.price)}"></label><label style="flex:1">${t("op")}<input name="old" type="number" min="0" step="any" value="${esc(p.old||"")}"></label></div>
+ <label>${t("li")}<input name="link" type="url" required placeholder="https://" value="${esc(p.link)}"></label>
+ <label>${t("ca")}<select name="cat">${CATS.map(c=>`<option value="${c[0]}" ${p.cat==c[0]?"selected":""}>${c[1]} / ${c[2]}</option>`).join("")}</select></label>
+ <label>${t("im")}<input name="files" type="file" accept="image/*" multiple></label>
+ <div class="row"><label><input type="checkbox" name="top" ${p.top?"checked":""}>${t("top")}</label><label><input type="checkbox" name="free" ${p.free?"checked":""}>${t("free")}</label><label><input type="checkbox" name="nw" ${p.nw?"checked":""}>${t("nw")}</label></div>
+ <div id="msg"></div><div class="ac"><button type="button" id="cn">${t("cn")}</button><button class="pri">${t("sv")}</button></div></form></div>`;
+ $("#cn").onclick=()=>$("#adm").innerHTML="";
+ $("#f").onsubmit=async ev=>{
+  ev.preventDefault();if(busy)return;busy=true;
+  const f=ev.target,v=f.elements,m=$("#msg");
+  try{
+   let imgs=p.imgs||[];
+   if(v.files.files.length){
+    if(!assets){m.textContent="Photo upload unavailable.";busy=false;return}
+    m.textContent="Uploading...";imgs=[];
+    for(const file of [...v.files.files].slice(0,4)){imgs.push((await assets.upload(file)).url)}
+   }
+   const n={id:p.id||String(Date.now()),ts:p.ts||Date.now(),title:v.title.value.trim(),desc:v.desc.value.trim(),price:+v.price.value,old:+v.old.value||0,link:v.link.value.trim(),cat:v.cat.value,top:v.top.checked,free:v.free.checked,nw:v.nw.checked,imgs};
+   P=p.id?P.map(x=>x.id==p.id?n:x):[n,...P];
+   m.textContent="Publishing...";await persist();
+  }catch(err){m.textContent="Error: "+(err.message||err.code||err)}
+  busy=false;
+ };
+}
+async function persist(){
+ if(!art)return;
+ const c=document.documentElement.cloneNode(true);
+ c.querySelector("#data").textContent=JSON.stringify({products:P}).replace(/</g,"\\u003c");
+ for(const s of ["#app","#adm","#ch","#fl"])c.querySelector(s).innerHTML="";
+ c.querySelector("#so").innerHTML="";c.querySelector("#q").removeAttribute("value");
+ await art.publish("<!doctype html>\n"+c.outerHTML);
+}
+render();
+(async()=>{
+ try{
+  const u=await claude.use("user");
+  if(u&&u.canEdit()){art=await claude.use("artifact");assets=await claude.use("assets");admin=!!art;render()}
+ }catch(e){}
+})();
+</script>
+</body>
+</html>
